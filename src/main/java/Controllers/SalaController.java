@@ -22,6 +22,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.ObservableList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -60,6 +61,8 @@ public class SalaController implements Initializable {
     private Map<Integer, String> mapaMuseos = new HashMap<>();
 
     private MusSala salaSeleccionada = null;
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -67,17 +70,11 @@ public class SalaController implements Initializable {
         configurarTabla();
         cargarSalas();
 
-        tableSalas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                salaSeleccionada = newVal;
-                llenarFormulario(newVal);
-            }
-        });
-
         btnAgregar.setOnAction(e -> agregarSala());
         btnModificar.setOnAction(e -> modificarSala());
         btnEliminar.setOnAction(e -> eliminarSala());
         btnLimpiar.setOnAction(e -> limpiarCampos());
+        btnGuardar.setOnAction(e -> guardarCambios());
     }
 
     private void cargarMuseos() {
@@ -130,13 +127,12 @@ public class SalaController implements Initializable {
     }
 
     private void modificarSala() {
-        if (salaSeleccionada != null) {
-            salaSeleccionada.setSaNombre(txtNombre.getText());
-            salaSeleccionada.setSaDescripcion(txtDescripcion.getText());
-            salaSeleccionada.setSaMuid(cbMuseo.getValue().getMuId());
-            salaManager.updateSala(salaSeleccionada);
-            cargarSalas();
-            limpiarCampos();
+        MusSala seleccionada = tableSalas.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            salaSeleccionada = seleccionada;
+            llenarFormulario(seleccionada);
+        } else {
+            mostrarAlerta("Debe seleccionar una sala para modificar.");
         }
     }
 
@@ -154,5 +150,29 @@ public class SalaController implements Initializable {
         cbMuseo.setValue(null);
         tableSalas.getSelectionModel().clearSelection();
         salaSeleccionada = null;
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+    
+    private void guardarCambios() {
+        if (salaSeleccionada == null) {
+            mostrarAlerta("Debe seleccionar una sala para guardar los cambios.");
+            return;
+        }
+
+        salaSeleccionada.setSaNombre(txtNombre.getText());
+        salaSeleccionada.setSaDescripcion(txtDescripcion.getText());
+        salaSeleccionada.setSaMuid(cbMuseo.getValue().getMuId());
+
+        salaManager.updateSala(salaSeleccionada);
+        cargarSalas();
+        tableSalas.refresh();
+        limpiarCampos();
     }
 }

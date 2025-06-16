@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="620" prefWidth="900" stylesheets="@../styles/especie.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.EspecieController">
+<AnchorPane prefHeight="620" prefWidth="900" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.EspecieController">
 
     <children>
 
@@ -65,6 +65,7 @@
             <Button fx:id="btnModificar" text="Modificar" />
             <Button fx:id="btnEliminar" text="Eliminar" />
             <Button fx:id="btnLimpiar" text="Limpiar" />
+         <Button fx:id="btnGuardar" mnemonicParsing="false" text="Guardar cambios" />
         </HBox>
 
         <TableView fx:id="tableEspecies" layoutX="40" layoutY="401.0" prefHeight="199.0" prefWidth="820">

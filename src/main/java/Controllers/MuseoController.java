@@ -19,6 +19,8 @@ import Managers.MusMuseoManager;
 import javafx.collections.ObservableList;
 import java.time.ZoneId;
 import java.util.Date;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
@@ -67,6 +69,8 @@ public class MuseoController implements Initializable {
 
     private final MusMuseoManager museoManager = new MusMuseoManager();
     private MusMuseo museoSeleccionado = null;
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -82,31 +86,16 @@ public class MuseoController implements Initializable {
 
         cargarMuseos();
 
-        tableMuseos.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                museoSeleccionado = newVal;
-                llenarFormulario(museoSeleccionado);
-            }
-        });
-
         btnAgregar.setOnAction(e -> agregarMuseo());
         btnModificar.setOnAction(e -> modificarMuseo());
         btnEliminar.setOnAction(e -> eliminarMuseo());
         btnLimpiar.setOnAction(e -> limpiarCampos());
+        btnGuardar.setOnAction(e -> guardarCambios());
     }
 
     private void cargarMuseos() {
         ObservableList<MusMuseo> museos = museoManager.getAllMuseos();
         tableMuseos.setItems(museos);
-    }
-
-    private void llenarFormulario(MusMuseo m) {
-        txtNombre.setText(m.getMuNombre());
-        cbTipo.setValue(m.getMuTipo());
-        txtUbicacion.setText(m.getMuUbicacion());
-        dpFundacion.setValue(m.getMuFechaFun() != null ? m.getMuFechaFun().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null);
-        txtDirector.setText(m.getMuDirector());
-        txtWeb.setText(m.getMuSitioWep());
     }
 
     private void agregarMuseo() {
@@ -122,21 +111,27 @@ public class MuseoController implements Initializable {
         cargarMuseos();
         limpiarCampos();
     }
+    
+    private void llenarFormulario(MusMuseo m) {
+        txtNombre.setText(m.getMuNombre());
+        cbTipo.setValue(m.getMuTipo());
+        txtUbicacion.setText(m.getMuUbicacion());
+        dpFundacion.setValue(m.getMuFechaFun() != null 
+        ? ((java.sql.Date) m.getMuFechaFun()).toLocalDate() 
+        : null);
+        txtDirector.setText(m.getMuDirector());
+        txtWeb.setText(m.getMuSitioWep());
+    }
 
     private void modificarMuseo() {
-        if (museoSeleccionado != null) {
-            museoSeleccionado.setMuNombre(txtNombre.getText());
-            museoSeleccionado.setMuTipo(cbTipo.getValue());
-            museoSeleccionado.setMuUbicacion(txtUbicacion.getText());
-            museoSeleccionado.setMuFechaFun(dpFundacion.getValue() != null ? Date.from(dpFundacion.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()) : null);
-            museoSeleccionado.setMuDirector(txtDirector.getText());
-            museoSeleccionado.setMuSitioWep(txtWeb.getText());
-
-            museoManager.updateMuseo(museoSeleccionado);
-            cargarMuseos();
-            limpiarCampos();
+        MusMuseo seleccionado = tableMuseos.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+            museoSeleccionado = seleccionado;
+            llenarFormulario(seleccionado);
+            mostrarAlerta("Debe seleccionar un museo para editar.");
         }
     }
+
 
     private void eliminarMuseo() {
         if (museoSeleccionado != null) {
@@ -155,5 +150,35 @@ public class MuseoController implements Initializable {
         txtWeb.clear();
         museoSeleccionado = null;
         tableMuseos.getSelectionModel().clearSelection();
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void guardarCambios() {
+        if (museoSeleccionado == null) {
+            mostrarAlerta("Debe seleccionar un museo para guardar los cambios.");
+            return;
+        }
+
+        museoSeleccionado.setMuNombre(txtNombre.getText());
+        museoSeleccionado.setMuTipo(cbTipo.getValue());
+        museoSeleccionado.setMuUbicacion(txtUbicacion.getText());
+        museoSeleccionado.setMuFechaFun(dpFundacion.getValue() != null
+            ? Date.from(dpFundacion.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
+            : null);
+        museoSeleccionado.setMuDirector(txtDirector.getText());
+        museoSeleccionado.setMuSitioWep(txtWeb.getText());
+
+        museoManager.updateMuseo(museoSeleccionado);
+        cargarMuseos();
+        tableMuseos.refresh();
+        limpiarCampos();
     }
 }

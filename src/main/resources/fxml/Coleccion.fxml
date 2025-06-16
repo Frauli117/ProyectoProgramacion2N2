@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="600" prefWidth="800" stylesheets="@../styles/coleccion.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ColeccionController">
+<AnchorPane prefHeight="600" prefWidth="800" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ColeccionController">
 
     <children>
 
@@ -48,6 +48,7 @@
             <Button fx:id="btnModificar" text="Modificar" />
             <Button fx:id="btnEliminar" text="Eliminar" />
             <Button fx:id="btnLimpiar" text="Limpiar" />
+         <Button fx:id="btnGuardar" mnemonicParsing="false" text="Guardar cambios" />
         </HBox>
 
         <TableView fx:id="tableColecciones" layoutX="40" layoutY="286.0" prefHeight="254.0" prefWidth="720">

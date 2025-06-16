@@ -116,7 +116,7 @@ public class MusSala implements Serializable {
 
     @Override
     public String toString() {
-        return "Database.MusSala[ saId=" + saId + " ]";
+        return saNombre;
     }
     
 }

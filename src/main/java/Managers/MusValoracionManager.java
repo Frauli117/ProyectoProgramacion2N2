@@ -7,6 +7,10 @@ package Managers;
 import Database.MusValoracion;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.util.List;
+import java.util.ArrayList;
+
+
 
 import java.sql.*;
 
@@ -105,5 +109,57 @@ public class MusValoracionManager {
             e.printStackTrace();
         }
     }
+    
+    public boolean guardarValoracion(int salaId, int estrellas, String comentario) {
+        String sql = "INSERT INTO MUS_VALORACION (VA_SAID, VA_ESTRELLAS, VA_COMENTARIO) VALUES (?, ?, ?)";
+
+        try (Connection connect = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement stm = connect.prepareStatement(sql)) {
+
+            stm.setInt(1, salaId);
+            stm.setInt(2, estrellas);
+            stm.setString(3, comentario);
+
+            stm.executeUpdate();
+            closeConnection(connect);
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public List<String> getPromedioValoracionPorSala(boolean ascendente) {
+    List<String> lista = new ArrayList<>();
+
+        String orden = ascendente ? "ASC" : "DESC";
+        String sql = "SELECT S.SA_ID, S.SA_NOMBRE, ROUND(AVG(V.VA_ESTRELLAS), 2) AS PROMEDIO " +
+                     "FROM MUS_SALA S " +
+                     "JOIN MUS_VALORACION V ON S.SA_ID = V.VA_SAID " +
+                     "GROUP BY S.SA_ID, S.SA_NOMBRE " +
+                     "ORDER BY PROMEDIO " + orden;
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("SA_ID");
+                String nombre = rs.getString("SA_NOMBRE");
+                double promedio = rs.getDouble("PROMEDIO");
+
+                String info = "Sala: " + nombre + " | ID: " + id + " | Promedio: " + promedio;
+                lista.add(info);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
+
+
 }
 

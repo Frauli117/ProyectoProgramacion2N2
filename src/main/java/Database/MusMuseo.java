@@ -156,7 +156,7 @@ public class MusMuseo implements Serializable {
 
     @Override
     public String toString() {
-        return "Database.MusMuseo[ muId=" + muId + " ]";
+        return muNombre;
     }
     
 }

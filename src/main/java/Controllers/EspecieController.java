@@ -25,6 +25,7 @@ import java.util.Date;
 import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -82,6 +83,8 @@ public class EspecieController implements Initializable {
     private final MusColeccionManager coleccionManager = new MusColeccionManager();
     private MusEspecie especieSeleccionada = null;
     private Map<Integer, String> mapaColecciones = new HashMap<>();
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -89,17 +92,11 @@ public class EspecieController implements Initializable {
         configurarTabla();
         cargarEspecies();
 
-        tableEspecies.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                especieSeleccionada = newVal;
-                llenarFormulario(newVal);
-            }
-        });
-
         btnAgregar.setOnAction(e -> agregarEspecie());
         btnModificar.setOnAction(e -> modificarEspecie());
         btnEliminar.setOnAction(e -> eliminarEspecie());
         btnLimpiar.setOnAction(e -> limpiarCampos());
+        btnGuardar.setOnAction(e -> guardarCambios());
     }
 
     private void cargarColecciones() {
@@ -124,7 +121,7 @@ public class EspecieController implements Initializable {
 
         colColeccion.setCellValueFactory(cellData -> {
             Integer idColeccion = cellData.getValue().getEsCoid();
-            String nombre = mapaColecciones.getOrDefault(idColeccion, "Sin colección");
+            String nombre = mapaColecciones.getOrDefault(idColeccion, "Sin coleccion");
             return new ReadOnlyStringWrapper(nombre);
         });
     }
@@ -137,7 +134,9 @@ public class EspecieController implements Initializable {
     private void llenarFormulario(MusEspecie e) {
         txtNombreCientifico.setText(e.getEsNombreCient());
         txtNombreComun.setText(e.getEsNombreComun());
-        dpExtincion.setValue(e.getEsExtincion() != null ? e.getEsExtincion().toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null);
+        dpExtincion.setValue(e.getEsExtincion() != null 
+            ? ((java.sql.Date) e.getEsExtincion()).toLocalDate()
+            : null);
         txtEpoca.setText(e.getEsEpoca());
         txtPeso.setText(String.valueOf(e.getEsPeso()));
         txtTamano.setText(String.valueOf(e.getEsTamano()));
@@ -167,19 +166,36 @@ public class EspecieController implements Initializable {
     }
 
     private void modificarEspecie() {
-        if (especieSeleccionada != null) {
-            especieSeleccionada.setEsCoid(cbColeccion.getValue().getCoId());
-            especieSeleccionada.setEsNombreCient(txtNombreCientifico.getText());
-            especieSeleccionada.setEsNombreComun(txtNombreComun.getText());
-            especieSeleccionada.setEsExtincion(dpExtincion.getValue() != null ? java.sql.Date.valueOf(dpExtincion.getValue()) : null);
-            especieSeleccionada.setEsEpoca(txtEpoca.getText());
-            especieSeleccionada.setEsPeso(Double.parseDouble(txtPeso.getText()));
-            especieSeleccionada.setEsTamano(Double.parseDouble(txtTamano.getText()));
-            especieSeleccionada.setEsCaracteristicas(txtCaracteristicas.getText());
-            especieManager.updateEspecie(especieSeleccionada);
-            cargarEspecies();
-            limpiarCampos();
+        MusEspecie seleccionada = tableEspecies.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            especieSeleccionada = seleccionada;
+            llenarFormulario(seleccionada);
+        } else {
+            mostrarAlerta("Debe seleccionar una especie para modificar.");
         }
+    }
+    
+    private void guardarCambios() {
+        if (especieSeleccionada == null) {
+            mostrarAlerta("Debe seleccionar una especie para guardar los cambios.");
+            return;
+        }
+
+        especieSeleccionada.setEsCoid(cbColeccion.getValue().getCoId());
+        especieSeleccionada.setEsNombreCient(txtNombreCientifico.getText());
+        especieSeleccionada.setEsNombreComun(txtNombreComun.getText());
+        especieSeleccionada.setEsExtincion(dpExtincion.getValue() != null 
+            ? java.sql.Date.valueOf(dpExtincion.getValue()) 
+            : null);
+        especieSeleccionada.setEsEpoca(txtEpoca.getText());
+        especieSeleccionada.setEsPeso(Double.parseDouble(txtPeso.getText()));
+        especieSeleccionada.setEsTamano(Double.parseDouble(txtTamano.getText()));
+        especieSeleccionada.setEsCaracteristicas(txtCaracteristicas.getText());
+
+        especieManager.updateEspecie(especieSeleccionada);
+        cargarEspecies();
+        tableEspecies.refresh();
+        limpiarCampos();
     }
 
     private void eliminarEspecie() {
@@ -201,5 +217,13 @@ public class EspecieController implements Initializable {
         cbColeccion.setValue(null);
         tableEspecies.getSelectionModel().clearSelection();
         especieSeleccionada = null;
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

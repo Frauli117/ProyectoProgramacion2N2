@@ -18,6 +18,7 @@ import Managers.MusComisionManager;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -49,6 +50,8 @@ public class ComisionController implements Initializable {
 
     private final MusComisionManager comisionManager = new MusComisionManager();
     private MusComision comisionSeleccionada = null;
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -56,17 +59,11 @@ public class ComisionController implements Initializable {
         configurarTabla();
         cargarComisiones();
 
-        tableComisiones.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                comisionSeleccionada = newVal;
-                llenarFormulario(newVal);
-            }
-        });
-
         btnAgregar.setOnAction(e -> agregarComision());
         btnModificar.setOnAction(e -> modificarComision());
         btnEliminar.setOnAction(e -> eliminarComision());
         btnLimpiar.setOnAction(e -> limpiarCampos());
+        btnGuardar.setOnAction(e -> guardarCambios());
     }
 
     private void configurarTabla() {
@@ -95,13 +92,27 @@ public class ComisionController implements Initializable {
     }
 
     private void modificarComision() {
-        if (comisionSeleccionada != null) {
-            comisionSeleccionada.setCmTipo(cbTipo.getValue());
-            comisionSeleccionada.setCmPorcentaje(Double.parseDouble(txtPorcentaje.getText()));
-            comisionManager.updateComision(comisionSeleccionada);
-            cargarComisiones();
-            limpiarCampos();
+        MusComision seleccionada = tableComisiones.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            comisionSeleccionada = seleccionada;
+            llenarFormulario(seleccionada);
+        } else {
+            mostrarAlerta("Debe seleccionar una comision para modificar.");
         }
+    }
+    
+    private void guardarCambios() {
+        if (comisionSeleccionada == null) {
+            mostrarAlerta("Debe seleccionar una comision para guardar los cambios.");
+            return;
+        }
+
+        comisionSeleccionada.setCmTipo(cbTipo.getValue());
+        comisionSeleccionada.setCmPorcentaje(Double.parseDouble(txtPorcentaje.getText()));
+        comisionManager.updateComision(comisionSeleccionada);
+        cargarComisiones();
+        tableComisiones.refresh();
+        limpiarCampos();
     }
 
     private void eliminarComision() {
@@ -117,5 +128,13 @@ public class ComisionController implements Initializable {
         txtPorcentaje.clear();
         tableComisiones.getSelectionModel().clearSelection();
         comisionSeleccionada = null;
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

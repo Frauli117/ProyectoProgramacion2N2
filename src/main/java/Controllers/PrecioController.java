@@ -22,6 +22,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -60,6 +61,8 @@ public class PrecioController implements Initializable {
 
     private MusPrecio precioSeleccionado = null;
     private Map<Integer, String> mapaSalas = new HashMap<>();
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -67,17 +70,11 @@ public class PrecioController implements Initializable {
         configurarTabla();
         cargarPrecios();
 
-        tablePrecios.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                precioSeleccionado = newVal;
-                llenarFormulario(newVal);
-            }
-        });
-
         btnAgregar.setOnAction(e -> agregarPrecio());
         btnModificar.setOnAction(e -> modificarPrecio());
         btnEliminar.setOnAction(e -> eliminarPrecio());
         btnLimpiar.setOnAction(e -> limpiarCampos());
+        btnGuardar.setOnAction(e -> guardarCambios());
     }
 
     private void cargarSalas() {
@@ -130,14 +127,29 @@ public class PrecioController implements Initializable {
     }
 
     private void modificarPrecio() {
-        if (precioSeleccionado != null) {
-            precioSeleccionado.setPrSaid(cbSala.getValue().getSaId());
-            precioSeleccionado.setPrLunsab(Double.parseDouble(txtPrecioLunSab.getText()));
-            precioSeleccionado.setPrDomingo(Double.parseDouble(txtPrecioDomingo.getText()));
-            precioManager.updatePrecio(precioSeleccionado);
-            cargarPrecios();
-            limpiarCampos();
+        MusPrecio seleccionado = tablePrecios.getSelectionModel().getSelectedItem();
+        if (seleccionado != null) {
+            precioSeleccionado = seleccionado;
+            llenarFormulario(precioSeleccionado);
+        } else {
+            mostrarAlerta("Debe seleccionar un precio para modificar.");
         }
+    }
+    
+    private void guardarCambios() {
+        if (precioSeleccionado == null) {
+            mostrarAlerta("Debe seleccionar un precio para guardar los cambios.");
+            return;
+        }
+
+        precioSeleccionado.setPrSaid(cbSala.getValue().getSaId());
+        precioSeleccionado.setPrLunsab(Double.parseDouble(txtPrecioLunSab.getText()));
+        precioSeleccionado.setPrDomingo(Double.parseDouble(txtPrecioDomingo.getText()));
+
+        precioManager.updatePrecio(precioSeleccionado);
+        cargarPrecios();
+        tablePrecios.refresh();
+        limpiarCampos();
     }
 
     private void eliminarPrecio() {
@@ -154,5 +166,13 @@ public class PrecioController implements Initializable {
         cbSala.setValue(null);
         tablePrecios.getSelectionModel().clearSelection();
         precioSeleccionado = null;
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

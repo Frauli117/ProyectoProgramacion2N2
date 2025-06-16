@@ -22,6 +22,7 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.ObservableList;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -64,19 +65,14 @@ public class ColeccionController implements Initializable {
 
     private MusColeccion coleccionSeleccionada = null;
     private Map<Integer, String> mapaSalas = new HashMap<>();
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         cargarSalas();
         configurarTabla();
         cargarColecciones();
-
-        tableColecciones.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                coleccionSeleccionada = newVal;
-                llenarFormulario(newVal);
-            }
-        });
 
         btnAgregar.setOnAction(e -> agregarColeccion());
         btnModificar.setOnAction(e -> modificarColeccion());
@@ -137,15 +133,30 @@ public class ColeccionController implements Initializable {
     }
 
     private void modificarColeccion() {
-        if (coleccionSeleccionada != null) {
-            coleccionSeleccionada.setCoNombre(txtNombre.getText());
-            coleccionSeleccionada.setCoSiglo(txtSiglo.getText());
-            coleccionSeleccionada.setCoDescripcion(txtDescripcion.getText());
-            coleccionSeleccionada.setCoSaid(cbSala.getValue().getSaId());
-            coleccionManager.updateColeccion(coleccionSeleccionada);
-            cargarColecciones();
-            limpiarCampos();
+        MusColeccion seleccionada = tableColecciones.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            coleccionSeleccionada = seleccionada;
+            llenarFormulario(seleccionada);
+        } else {
+            mostrarAlerta("Debe seleccionar una coleccion para modificar.");
         }
+    }
+    
+    private void guardarCambios() {
+        if (coleccionSeleccionada == null) {
+            mostrarAlerta("Debe seleccionar una coleccion para guardar los cambios.");
+            return;
+        }
+
+        coleccionSeleccionada.setCoNombre(txtNombre.getText());
+        coleccionSeleccionada.setCoSiglo(txtSiglo.getText());
+        coleccionSeleccionada.setCoDescripcion(txtDescripcion.getText());
+        coleccionSeleccionada.setCoSaid(cbSala.getValue().getSaId());
+
+        coleccionManager.updateColeccion(coleccionSeleccionada);
+        cargarColecciones();
+        tableColecciones.refresh();
+        limpiarCampos();
     }
 
     private void eliminarColeccion() {
@@ -163,5 +174,13 @@ public class ColeccionController implements Initializable {
         cbSala.setValue(null);
         tableColecciones.getSelectionModel().clearSelection();
         coleccionSeleccionada = null;
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

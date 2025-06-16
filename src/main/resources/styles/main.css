@@ -1,0 +1,45 @@
+/*
+ * Empty Stylesheet file.
+ */
+
+.root {
+    -fx-background-color: #ECEFF4;
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2E3440;
+}
+
+.label {
+    -fx-text-fill: #2E3440;
+}
+
+.button {
+    -fx-background-color: #88C0D0;
+    -fx-text-fill: #ECEFF4;
+    -fx-background-radius: 8;
+}
+
+.button:hover {
+    -fx-background-color: #5E81AC;
+}
+
+.combo-box {
+    -fx-background-color: #E5E9F0;
+    -fx-text-fill: #2E3440;
+}
+
+.table-view {
+    -fx-background-color: #D8DEE9;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #81A1C1;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-row-cell:filled:selected {
+    -fx-background-color: #8FBCBB;
+}

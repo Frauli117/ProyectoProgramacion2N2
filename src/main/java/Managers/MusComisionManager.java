@@ -7,6 +7,10 @@ package Managers;
 import Database.MusComision;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.sql.Date;
+import java.time.LocalDate;
 
 import java.sql.*;
 
@@ -102,5 +106,36 @@ public class MusComisionManager {
             e.printStackTrace();
         }
     }
+    
+    public Map<String, Double> obtenerTotalComisionesPorTarjeta(LocalDate inicio, LocalDate fin) {
+        Map<String, Double> resultado = new LinkedHashMap<>();
+
+        String sql = "SELECT C.CM_TIPO, SUM(E.EN_TOTAL * C.CM_PORCENTAJE / 100) AS TOTAL_COMISION " +
+                     "FROM MUS_ENTRADA E " +
+                     "JOIN MUS_COMISION C ON E.EN_COMID = C.CM_ID " +
+                     "WHERE E.EN_FECHA BETWEEN ? AND ? " +
+                     "GROUP BY C.CM_TIPO " +
+                     "ORDER BY C.CM_TIPO";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setTimestamp(1, Timestamp.valueOf(inicio.atStartOfDay()));
+            stmt.setTimestamp(2, Timestamp.valueOf(fin.plusDays(1).atStartOfDay().minusNanos(1)));
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String tipoTarjeta = rs.getString("CM_TIPO");
+                double total = rs.getDouble("TOTAL_COMISION");
+                resultado.put(tipoTarjeta, total);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return resultado;
+    }
+
 }
 

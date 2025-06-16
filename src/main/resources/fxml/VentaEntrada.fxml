@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane prefHeight="650" prefWidth="873.0" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.VentaEntradaController">
+
+    <children>
+
+        <Label layoutX="380" layoutY="20" style="-fx-font-size: 20px; -fx-font-weight: bold;" text="VENDER ENTRADA" />
+
+        <GridPane hgap="10" layoutX="40" layoutY="70" vgap="12">
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            <ColumnConstraints />
+            <ColumnConstraints />
+            </columnConstraints>
+
+            <Label text="Nombre Visitante:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="txtNombre" prefWidth="250" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label text="Tipo Tarjeta:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+            <ComboBox fx:id="cbTarjeta" prefWidth="200" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+
+            <Label text="Entrada a:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <ComboBox fx:id="cbSala" prefWidth="250" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label text="Fecha:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <DatePicker fx:id="dpFecha" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+
+        <Button fx:id="btnAgregar" layoutX="727.0" layoutY="120.0" prefWidth="100" text="AGREGAR" />
+
+        <TableView fx:id="tableDetalle" layoutX="110.0" layoutY="183.0" prefHeight="250" prefWidth="653.0">
+            <columns>
+                <TableColumn fx:id="colSala" prefWidth="300" text="Sala" />
+                <TableColumn fx:id="colFecha" prefWidth="200" text="Fecha Visita" />
+                <TableColumn fx:id="colPrecio" prefWidth="150" text="Precio" />
+            </columns>
+        </TableView>
+
+        <GridPane hgap="10" layoutX="600" layoutY="440" vgap="10">
+            <Label text="SUBTOTAL:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <Label fx:id="lblSubtotal" text="₡0.00" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+            <Label text="IVA (13%):" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Label fx:id="lblIVA" text="₡0.00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label style="-fx-font-weight: bold;" text="TOTAL A PAGAR:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <Label fx:id="lblTotal" style="-fx-font-weight: bold;" text="₡0.00" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+            <RowConstraints />
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
+
+        <Button fx:id="btnVender" layoutX="600" layoutY="540" prefWidth="150" text="VENDER" />
+      <Label fx:id="lblCodigoGenerado" layoutX="130.0" layoutY="528.0" prefHeight="25.0" prefWidth="250.0" />
+
+    </children>
+</AnchorPane>

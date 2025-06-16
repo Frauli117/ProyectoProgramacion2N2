@@ -23,6 +23,7 @@ import javafx.collections.ObservableList;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.control.Alert;
 
 /**
  * FXML Controller class
@@ -65,6 +66,8 @@ public class TematicaController implements Initializable {
 
     private MusTematica tematicaSeleccionada = null;
     private Map<Integer, String> mapaSalas = new HashMap<>();
+    @FXML
+    private Button btnGuardar;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -72,17 +75,11 @@ public class TematicaController implements Initializable {
         configurarTabla();
         cargarTematicas();
 
-        tableTematicas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                tematicaSeleccionada = newVal;
-                llenarFormulario(newVal);
-            }
-        });
-
         btnAgregar.setOnAction(e -> agregarTematica());
         btnModificar.setOnAction(e -> modificarTematica());
         btnEliminar.setOnAction(e -> eliminarTematica());
         btnLimpiar.setOnAction(e -> limpiarCampos());
+        btnGuardar.setOnAction(e -> guardarCambios());
     }
 
     private void cargarSalas() {
@@ -138,15 +135,30 @@ public class TematicaController implements Initializable {
     }
 
     private void modificarTematica() {
-        if (tematicaSeleccionada != null) {
-            tematicaSeleccionada.setTeNombre(txtNombre.getText());
-            tematicaSeleccionada.setTeCaracteristicas(txtCaracteristicas.getText());
-            tematicaSeleccionada.setTeEpoca(txtEpoca.getText());
-            tematicaSeleccionada.setTeSaid(cbSala.getValue().getSaId());
-            tematicaManager.updateTematica(tematicaSeleccionada);
-            cargarTematicas();
-            limpiarCampos();
+        MusTematica seleccionada = tableTematicas.getSelectionModel().getSelectedItem();
+        if (seleccionada != null) {
+            tematicaSeleccionada = seleccionada;
+            llenarFormulario(seleccionada);
+        } else {
+            mostrarAlerta("Debe seleccionar una tematica para modificar.");
         }
+    }
+    
+    private void guardarCambios() {
+        if (tematicaSeleccionada == null) {
+            mostrarAlerta("Debe seleccionar una tematica para guardar los cambios.");
+            return;
+        }
+
+        tematicaSeleccionada.setTeNombre(txtNombre.getText());
+        tematicaSeleccionada.setTeCaracteristicas(txtCaracteristicas.getText());
+        tematicaSeleccionada.setTeEpoca(txtEpoca.getText());
+        tematicaSeleccionada.setTeSaid(cbSala.getValue().getSaId());
+
+        tematicaManager.updateTematica(tematicaSeleccionada);
+        cargarTematicas();
+        tableTematicas.refresh();
+        limpiarCampos();
     }
 
     private void eliminarTematica() {
@@ -164,5 +176,13 @@ public class TematicaController implements Initializable {
         cbSala.setValue(null);
         tableTematicas.getSelectionModel().clearSelection();
         tematicaSeleccionada = null;
+    }
+    
+    private void mostrarAlerta(String mensaje) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Advertencia");
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
     }
 }

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="600" prefWidth="800" stylesheets="@../styles/comision.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ComisionController">
+<AnchorPane prefHeight="600" prefWidth="800" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ComisionController">
 
     <children>
 
@@ -40,9 +40,10 @@
             <Button fx:id="btnModificar" text="Modificar" />
             <Button fx:id="btnEliminar" text="Eliminar" />
             <Button fx:id="btnLimpiar" text="Limpiar" />
+         <Button fx:id="btnGuardar" mnemonicParsing="false" text="Guardar cambios" />
         </HBox>
 
-        <TableView fx:id="tableComisiones" layoutX="40" layoutY="220" prefHeight="320" prefWidth="720">
+        <TableView fx:id="tableComisiones" layoutX="184.0" layoutY="223.0" prefHeight="320" prefWidth="433.0">
             <columns>
                 <TableColumn fx:id="colId" prefWidth="80" text="ID" />
                 <TableColumn fx:id="colTipo" prefWidth="200" text="Tipo tarjeta" />

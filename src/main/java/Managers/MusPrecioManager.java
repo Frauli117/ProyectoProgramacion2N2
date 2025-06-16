@@ -105,5 +105,33 @@ public class MusPrecioManager {
             e.printStackTrace();
         }
     }
+    
+    public MusPrecio getPrecioPorSala(int idSala) {
+        MusPrecio precio = null;
+        String sql = "SELECT * FROM MUS_PRECIO WHERE PR_SAID = ?";
+
+        try (Connection connect = DriverManager.getConnection(URL, USER, PASS);
+             PreparedStatement stm = connect.prepareStatement(sql)) {
+
+            stm.setInt(1, idSala);
+            ResultSet rs = stm.executeQuery();
+
+            if (rs.next()) {
+                precio = new MusPrecio();
+                precio.setPrId(rs.getInt("PR_ID"));
+                precio.setPrSaid(rs.getInt("PR_SAID"));
+                precio.setPrLunsab(rs.getDouble("PR_LUNSAB"));
+                precio.setPrDomingo(rs.getDouble("PR_DOMINGO"));
+            }
+
+            closeConnection(connect);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return precio;
+        }
+
 }
 

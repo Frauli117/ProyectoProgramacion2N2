@@ -126,10 +126,10 @@ public class MusColeccion implements Serializable {
         }
         return true;
     }
-
+    
     @Override
     public String toString() {
-        return "Database.MusColeccion[ coId=" + coId + " ]";
+        return coNombre;
     }
     
 }

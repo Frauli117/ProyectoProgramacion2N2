@@ -116,7 +116,6 @@ public class MusComision implements Serializable {
 
     @Override
     public String toString() {
-        return "Database.MusComision[ cmId=" + cmId + " ]";
-    }
-    
+        return cmTipo;
+    }   
 }

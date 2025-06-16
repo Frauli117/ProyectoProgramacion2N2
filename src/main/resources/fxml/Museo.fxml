@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="600" prefWidth="800" stylesheets="@../styles/museo.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MuseoController">
+<AnchorPane prefHeight="600" prefWidth="800" stylesheets="@../styles/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.MuseoController">
 
     <children>
 
@@ -56,7 +56,8 @@
             <Button fx:id="btnAgregar" text="Agregar" />
             <Button fx:id="btnModificar" text="Modificar" />
             <Button fx:id="btnEliminar" text="Eliminar" />
-            <Button fx:id="btnLimpiar" text="Limpiar" />
+            <Button fx:id="btnLimpiar" prefHeight="25.0" prefWidth="67.0" text="Limpiar" />
+         <Button fx:id="btnGuardar" mnemonicParsing="false" text="Guardar cambios" />
         </HBox>
 
         <TableView fx:id="tableMuseos" layoutX="40" layoutY="357.0" prefHeight="223.0" prefWidth="720">
