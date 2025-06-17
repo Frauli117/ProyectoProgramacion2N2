@@ -128,6 +128,7 @@ public class MuseoController implements Initializable {
         if (seleccionado != null) {
             museoSeleccionado = seleccionado;
             llenarFormulario(seleccionado);
+        } else {
             mostrarAlerta("Debe seleccionar un museo para editar.");
         }
     }

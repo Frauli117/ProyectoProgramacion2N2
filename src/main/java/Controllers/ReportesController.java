@@ -110,5 +110,4 @@ public class ReportesController {
         public String getTarjeta() { return tarjeta; }
         public Double getMonto() { return monto; }
     }
-    
 }
